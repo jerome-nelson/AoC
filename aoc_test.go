@@ -33,3 +33,12 @@ func TestGetFileError(t *testing.T) {
 
 	GetFile("mock/chapter-ones.txt")
 }
+
+func TestCurrentDiveLocation(t *testing.T) {
+	mock := []string{"forward 1", "down 5", "forward 8", "up 3", "down 8", "forward 2"}
+	data := CurrentDiveLocation(mock)
+
+	if data != 110 {
+		t.Errorf("CurrentDiveLocation should be 110, instead got: %d", data)
+	}
+}
