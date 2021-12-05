@@ -12,8 +12,9 @@ import (
 
 type DiveInstruction int64
 type DiveCoords struct {
-	x int
-	y int
+	horizontal int
+	depth      int
+	aim        int
 }
 
 const (
@@ -41,11 +42,16 @@ func getDiveInstruction(direction string) (DiveInstruction, error) {
 // 1. Starts from Zero Integers
 // 2. Essentially a graph with x, y co-ords
 // 3. Forward (left) increments horizontal. Up/Down increments/decrements the vertical number
-func CurrentDiveLocation(instruction []string) int {
+
+// Part 2
+// 1. Aim should increment/decrement on Down/Up
+// 2. On forward it should multiply current aim by number of places forward
+func CurrentDiveLocation(instruction []string) DiveCoords {
 
 	currentLocation := DiveCoords{
-		x: 0,
-		y: 0,
+		horizontal: 0,
+		depth:      0,
+		aim:        0,
 	}
 
 	for _, order := range instruction {
@@ -56,19 +62,21 @@ func CurrentDiveLocation(instruction []string) int {
 		check(err)
 
 		if direction == Right {
-			currentLocation.x += number
+			addedDepth := currentLocation.aim * number
+			currentLocation.horizontal += number
+			currentLocation.depth += addedDepth
 		}
 
 		if direction == Up {
-			currentLocation.y -= number
+			currentLocation.aim -= number
 		}
 
 		if direction == Down {
-			currentLocation.y += number
+			currentLocation.aim += number
 		}
 	}
 
-	return currentLocation.x * currentLocation.y
+	return currentLocation
 }
 
 // Points for Chapter 1

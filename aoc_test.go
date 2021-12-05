@@ -35,10 +35,15 @@ func TestGetFileError(t *testing.T) {
 }
 
 func TestCurrentDiveLocation(t *testing.T) {
-	mock := []string{"forward 1", "down 5", "forward 8", "up 3", "down 8", "forward 2"}
+	mock := []string{"forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"}
 	data := CurrentDiveLocation(mock)
 
-	if data != 110 {
-		t.Errorf("CurrentDiveLocation should be 110, instead got: %d", data)
+	total := data.depth * data.horizontal
+	if total != 900 {
+		t.Errorf("CurrentDiveLocation should be 900, instead got: %d", total)
+	}
+
+	if data.aim != 10 {
+		t.Errorf("Aim should be 10, instead got: %d", data.aim)
 	}
 }
