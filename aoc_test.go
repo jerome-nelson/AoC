@@ -1,6 +1,9 @@
 package aoc
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
 func TestDepthTracker(t *testing.T) {
 	mock := []string{"1", "2", "1", "2"}
@@ -19,7 +22,7 @@ func TestGetFileParse(t *testing.T) {
 		t.Error("Something went wrong with files")
 	}()
 
-	GetFile("mocks/chapter-one.txt")
+	GetFile("mocks/day-one.txt")
 }
 
 func TestGetFileError(t *testing.T) {
@@ -46,4 +49,37 @@ func TestCurrentDiveLocation(t *testing.T) {
 	if data.aim != 10 {
 		t.Errorf("Aim should be 10, instead got: %d", data.aim)
 	}
+}
+
+func TestCheckPowerConsumption(t *testing.T) {
+	mock := []string{"00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010", "01010"}
+	result := CheckPowerConsumption(mock)
+
+	if result > 0 {
+		t.Errorf("Binary Conversion was wrong should be 000 was %d", result)
+	}
+}
+
+func TestConvertStringToBinary(t *testing.T) {
+
+	mock := []string{"00100", "11110", "10110"}
+	result := [][]int64{{1, 0, 0}, {1, 1, 1, 1, 0}, {1, 0, 1, 1, 0}}
+
+	for i, m := range mock {
+		num, _ := strconv.ParseInt(m, 2, 32)
+		test := _SumArr(ConvertUIntToBinary(num))
+		comparison := _SumArr(result[i])
+		if comparison != test {
+			t.Errorf("Binary Conversion was wrong should be %d was %d", comparison, test)
+		}
+	}
+}
+
+func _SumArr(list []int64) int64 {
+	var total int64
+	for _, item := range list {
+		total += item
+	}
+
+	return total
 }

@@ -10,7 +10,90 @@ import (
 	"strings"
 )
 
-type DiveInstruction int64
+// Day 3
+// 1. Need two vars to hold gamma and epsilon data
+// 		1a. Check the bit length of first string (NICE TO HAVE)
+//	 		i. Calculate 2n x 2n x ... to get decimal max
+//			ii. If more than 255 (uint16) else uint8 (could expand on this but only to cover sample and input given)
+//			iii. Create array with this max added
+// 2. Read each line as string and store them in array
+// 		i. Can we optimise this quickly? (alot of records)
+//      ii. Instead of storing as a string of bits -> can convert directly to decimal/bit and store like that?
+//		iii. Each string character in Go is natively UTF-8 so approx around 1byte per character (minimum)
+//		iv. Actually takes around 48bytes per character (https://go.dev/play/p/sWxtrSQbxmi.go?download=true)
+// 3. Bitwise NOT on gamma to get epsilon and convert to get decimal
+// 4. Multiply result
+func CheckPowerConsumption(input []string) int {
+	var (
+		linemax int
+		count   []int64
+		gamma   []int64
+	)
+
+	for _, line := range input {
+
+		if linemax == 0 {
+			linemax = len(line)
+		}
+
+		num, err := strconv.ParseInt(line, 2, 32)
+		check(err)
+		binary := ConvertUIntToBinary(num)
+		remainder := len(line) - len(binary)
+
+		if remainder != 0 {
+			prepend := make([]int64, remainder)
+			binary = append(prepend, binary...)
+		}
+
+		count = append(count, binary...)
+	}
+
+	gamma = make([]int64, linemax)
+
+	for i := range gamma {
+		result := make(map[int]int)
+		result[0] = 0
+		result[1] = 0
+		offset := linemax - i
+
+		for j := 0; j < len(count); j += offset {
+			if count[j] == 0 {
+				result[0] += 1
+				continue
+			}
+			result[1] += 1
+		}
+
+		if result[0] > result[1] {
+			gamma[i] = 0
+			continue
+		}
+
+		gamma[i] = 1
+	}
+
+	return 0
+}
+
+func ConvertUIntToBinary(num int64) []int64 {
+	var (
+		output []int64
+		binary []int64
+	)
+
+	for num != 0 {
+		binary = append(binary, num%2)
+		num = num / 2
+	}
+
+	for i := len(binary) - 1; i >= 0; i-- {
+		output = append(output, binary[i])
+	}
+	return output
+}
+
+type DiveInstruction int8
 type DiveCoords struct {
 	horizontal int
 	depth      int
@@ -38,7 +121,7 @@ func getDiveInstruction(direction string) (DiveInstruction, error) {
 	return Undefined, errors.New("dive instruction given is not correct")
 }
 
-// Points for Chapter 2
+// Points for Day 2
 // 1. Starts from Zero Integers
 // 2. Essentially a graph with x, y co-ords
 // 3. Forward (left) increments horizontal. Up/Down increments/decrements the vertical number
@@ -79,7 +162,7 @@ func CurrentDiveLocation(instruction []string) DiveCoords {
 	return currentLocation
 }
 
-// Points for Chapter 1
+// Points for Day 1
 // 1. Need a way to send input to script
 // 2. Data is given as a Txt File - so need to scrape that
 // 3. Need to keep a count of all increased times
